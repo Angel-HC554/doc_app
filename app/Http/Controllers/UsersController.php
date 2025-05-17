@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\User;
 use App\Models\UserDetails;
@@ -21,6 +22,11 @@ class UsersController extends Controller
         $user = Auth::user();
         $doctor = User::where('type', 'doctor')->get();
         $doctorData = Doctor::all();
+        //return today appointment together with user data
+        $date = now()->format('n/j/Y');
+        $appointment = Appointments::where('date', $date)->first();//('status', 'upcoming')->where
+         
+
 
         //collect user data and all doctor data
         foreach ($doctorData as $data) {
@@ -29,6 +35,9 @@ class UsersController extends Controller
                 if ($data['doc_id'] == $info['id']) {
                     $data['doctor_name'] = $info['name'];
                     $data['doctor_profile'] = $info['profile_photo_url'];
+                    if(isset($appointment) && $appointment['doc_id'] == $info['id']){
+                        $data['appointments'] = $appointment;
+                    }
                 }
             }
         }
