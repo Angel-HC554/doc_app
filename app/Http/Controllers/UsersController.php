@@ -24,7 +24,8 @@ class UsersController extends Controller
         $doctorData = Doctor::all();
         //return today appointment together with user data
         $date = now()->format('n/j/Y');
-        $appointment = Appointments::where('date', $date)->first();//('status', 'upcoming')->where
+        //make this appointment filter only status is "upcoming"
+        $appointment = Appointments::where('status', 'upcoming')->where('date', $date)->first();
          
 
 
