@@ -21,6 +21,7 @@ class UsersController extends Controller
         $user = array();//this will return a set of users and doctor data
         $user = Auth::user();
         $doctor = User::where('type', 'doctor')->get();
+         $details = $user->user_details;
         $doctorData = Doctor::all();
         //return today appointment together with user data
         $date = now()->format('n/j/Y');
@@ -44,6 +45,7 @@ class UsersController extends Controller
         }
 
         $user['doctor'] = $doctorData;
+        $user['details'] = $details; //return user details here together with doctor list
         return $user; //return all data
     }
 
@@ -104,6 +106,36 @@ class UsersController extends Controller
         ]);
 
         return $user;
+    }
+
+    /**
+     * update favorite doctor list
+     */
+    public function storeFavDoc(Request $request)
+    {
+        $saveFav = UserDetails::where('user_id', Auth::user()->id)->first();
+        $docList = json_encode($request->get('favList'));
+
+        //update fav list into database
+        $saveFav->fav = $docList;  //and remember update this as well
+        $saveFav->save();
+
+        return response()->json([
+            'success'=>'The Favorite List is updated',
+        ], 200);
+    }
+    /**
+     * logout.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(){
+        $user = Auth::user();
+        $user->currentAccessToken()->delete();
+
+        return response()->json([
+            'success'=>'Logout successfully!',
+        ], 200);
     }
 
     /**
